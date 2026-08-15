@@ -1,0 +1,7 @@
+# dsh-ui-font bundle patch: inserts the plugin row into the web profile
+# roster. Applied as a profile bundle layer (the `dsh.bundle.patch`
+# manifest field); activate with
+# `dsh plugin --profile <name> add dsh-ui-font` (npm) or `add link:<path>`.
+- insert:
+    - id: ui-font
+      name: 'dsh-ui-font'
