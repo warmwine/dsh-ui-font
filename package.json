@@ -1,44 +1,44 @@
 {
-  "name": "dsh-ui-font",
-  "version": "1.0.0",
-  "description": "DSH Web GUI font engine + settings page: runtime discovery of every client plugin's styles, per-plugin font-size deltas with manifest descriptions, system font enumeration via sfnt name-table parsing, stock token scaling, localStorage persistence, manual refresh (no polling).",
-  "type": "module",
-  "main": "lib/index.js",
-  "exports": {
-    ".": "./lib/index.js",
-    "./client": "./lib/client.js",
-    "./package.json": "./package.json"
-  },
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
+    "name": "dsh-ui-font",
+    "version": "0.6.0",
+    "description": "DSH Web GUI font engine + settings page: runtime discovery of every client plugin's styles, per-plugin font-size deltas with manifest descriptions, system font enumeration via sfnt name-table parsing, stock token scaling, localStorage persistence, manual refresh (no polling).",
+    "type": "module",
+    "main": "lib/index.js",
+    "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./package.json": "./package.json"
     },
-    "client": {
-      "inject": [],
-      "platform": "web"
-    }
-  },
-  "peerDependencies": {
-    "react": "^18.2.0"
-  },
-  "keywords": [
-    "deepseek",
-    "harness",
-    "dsh",
-    "dsh-plugin",
-    "font",
-    "font-size",
-    "ui",
-    "settings"
-  ],
-  "files": [
-    "lib",
-    "cordis.patch.yml",
-    "README.md"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/YOUR-USERNAME/dsh-ui-font.git"
-  },
-  "license": "MIT"
+    "dsh": {
+        "bundle": {
+            "patch": "./cordis.patch.yml"
+        },
+        "client": {
+            "inject": [],
+            "platform": "web"
+        }
+    },
+    "peerDependencies": {
+        "react": "^18.2.0"
+    },
+    "keywords": [
+        "deepseek",
+        "harness",
+        "dsh",
+        "dsh-plugin",
+        "font",
+        "font-size",
+        "ui",
+        "settings"
+    ],
+    "files": [
+        "lib",
+        "cordis.patch.yml",
+        "README.md"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/warmwine/dsh-ui-font.git"
+    },
+    "license": "MIT"
 }
