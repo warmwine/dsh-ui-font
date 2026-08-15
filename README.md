@@ -2,6 +2,16 @@
 
 DSH Web GUI 的字体引擎 + 设置页微型插件。**运行时自动发现所有界面插件与系统字体**并套用字体设置，dsh 本体零改动。
 
+## 效果
+
+| 安装前 | 安装后 |
+| :---: | :---: |
+| ![安装前](images/before.png) | ![安装后](images/after.png) |
+
+设置界面（侧边栏 → 设置 → 字体）：
+
+![设置界面](images/setting.png)
+
 ## 使用
 
 侧边栏 → 设置 → **「字体」**：
@@ -34,7 +44,8 @@ dsh-ui-font/
 ├── package.json       # dsh.bundle + dsh.client 声明（platform: web）
 ├── cordis.patch.yml   # bundle 层插入行（ui-font）
 ├── lib/index.js       # 宿主半边：描述 + 字体枚举路由（webServer）
-└── lib/client.js      # 浏览器半边：扫描引擎 + 令牌重写 + 设置页（settings.section）
+├── lib/client.js      # 浏览器半边：扫描引擎 + 令牌重写 + 设置页（settings.section）
+└── images/            # README 截图（不随 npm 包分发）
 ```
 
 ## 安装 / 卸载
