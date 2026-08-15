@@ -1,6 +1,6 @@
 {
     "name": "dsh-ui-font",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "description": "DSH Web GUI font engine + settings page: runtime discovery of every client plugin's styles, Spy++-style pick-to-tune element selector, system font enumeration via sfnt name-table parsing, stock token scaling, localStorage persistence, manual refresh (no polling).",
     "type": "module",
     "main": "lib/index.js",
