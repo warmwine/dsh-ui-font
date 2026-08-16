@@ -1,7 +1,7 @@
 {
     "name": "dsh-ui-font",
-    "version": "0.9.1",
-    "description": "DSH Web GUI font engine + settings page: runtime discovery of every client plugin's styles, declaration-point pick-to-tune selector (design tokens / per-rule px), system font enumeration via sfnt name-table parsing, localStorage persistence, manual refresh (no polling).",
+    "version": "0.9.2",
+    "description": "DSH Web GUI font engine + settings page: runtime discovery of every client plugin's styles, declaration-point pick-to-tune selector (design tokens / per-rule px), configurable hotkeys (picker / font size ±1), system font enumeration via sfnt name-table parsing, localStorage persistence, manual refresh (no polling).",
     "type": "module",
     "main": "lib/index.js",
     "exports": {
