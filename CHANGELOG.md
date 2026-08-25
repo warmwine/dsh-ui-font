@@ -4,6 +4,45 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循语义化版本。
 
+## [0.9.4]
+
+### 修复
+
+- **字号快捷键的三个疑难症状：「按了没反应要按两次」「按缩小反而变大」「偶尔正常」**。
+  根因是持久化层的 HTTP 竞态，三路叠加：
+  - 每次按键在 `bumpDelta` 里同步步进缓存后发 POST（连接 A），紧接着
+    `reapply()`→`loadSettings()` 发 GET（连接 B）。两个 fetch 并行，GET 常抢在
+    POST 落地前返回旧值，`loadSettings` 无条件 `localCache = 旧值` 把刚步进的
+    值覆盖回去 → 该次按键视觉上失效（"按两次才生效"）
+  - 页面刚加载时缓存是 DEFAULTS（delta=3）种子，首次 GET 未返回前按键会以 3
+    为基准步进：持久值 8 的用户按一下缩小直接落到 2（一次跳 6 格）；持久值低
+    于 3 的用户按缩小反而落在 2 → 字变大（"按 Ctrl+- 会增加"）
+  - 快速连按 +/− 混合时，乱序到达宿主的 POST 让最终值偏离预期，下一次 GET
+    把偏离值载回渲染 → 方向翻转
+  修复：所有宿主往返（GET 与 POST）排进单一 promise 队列，本页内绝不交错；
+  引入写纪元（writeEpoch），加载期间发生过本地写则以本地为准、不用过期响应
+  覆盖缓存；`reapply` 改为渲染同步缓存不再 fetch；`bumpDelta` 的读-改-写整体
+  入队（必然运行在初始加载之后，种子竞态消除）；设置页 `update` 的合并基准从
+  React 旧状态改为同步缓存（打开面板期间的旧状态覆盖问题一并消除）
+- **keyCode 187/189 旧路径匹配自 0.9.2 起是死代码**：守卫
+  `e.code === "" → return false` 恰好拦掉了唯一需要走 keyCode 的场景（无
+  code 的按键事件永远到不了 keyCode 比较）。改为「有真实 code 且未匹配即不
+  匹配；无 code 才落 keyCode」
+- **小键盘 +/- 不触发快捷键**：`Ctrl+NumpadAdd`/`Ctrl+NumpadSubtract` 现在
+  等同 `Ctrl+=`/`Ctrl+-`（仅当存储组合期望 = / - 时）
+- **缩放接管兜底**：任一字号快捷键设置后，未被匹配的 Ctrl+ +/- 变体（小键
+  盘、多按 Shift、无 code 事件）一律 `preventDefault`，不再漏给浏览器原生页
+  面缩放——原生缩放一旦漏进来，页面视觉字号与本插件 delta 脱钩，表现为
+  "按了没反应/方向不对"
+- **跨标签页漂移**：无轮询是设计使然，但后台标签的缓存会永久过期，回到该
+  标签后第一次按键会把 delta 跳回旧值。新增 visibilitychange/focus 时的防抖
+  重同步（走队列与写纪元，不会覆盖更新的本地写）
+- 移除 `onHotkey` 在 document 上的重复注册（window 捕获已覆盖；匹配时
+  `stopImmediatePropagation` 本就阻止了 document 侧重复触发，重复挂载只在未
+  匹配按键上白跑一次）
+- 新增 `tools/test-persistence-race.cjs`：以模拟宿主时序复现上述全部症状并
+  回归新旧逻辑（旧逻辑四场景全败、新逻辑全过）
+
 ## [0.9.3]
 
 ### 修复
