@@ -4,6 +4,29 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循语义化版本。
 
+## [0.9.5]
+
+### 修复
+
+- **插件加载失败：`Cannot find package '@deepseek-ai/dsh-settings'`**（0.9.3 引入）。
+  settings.yaml 持久化（PR #2）在 host 侧顶层静态 import 了
+  `@deepseek-ai/dsh-settings` 与 `@deepseek-ai/schemastery`，并以 peerDependencies
+  声明。但 `link:` 方式挂载的插件被 Node 以真实路径解析（E 盘目录链），既走不到
+  profile 的 node_modules，E 盘上也没有这两个包——模块链接阶段即失败，插件整体
+  无法加载，dsh 升级后首次以新挂载方式启动时暴露
+  修复：恢复零运行时依赖——
+  - 命名空间改用常量 `"ui-font"`（`settingsNamespace()` 仅是 kebab-case 规范化）
+  - `z.object(...)` 换成手写的规范化函数：补默认值、钳制区间、丢弃畸形条目，
+    镜像 client.js `validateSettings()` 的规则；挂 `toJSON()` 以满足
+    `ctx.settings.describe()` 的序列化契约
+  - 顺带消除了原 schema 的启动脆弱性：schemastery 的区间校验对脏数据是抛错
+    语义，手动编辑 settings.yaml 写出超范围值（如 `delta: 99`）会让插件在
+    register 阶段直接加载失败；新函数永不抛错，脏值读取时静默修正、下次保存
+    自愈写回
+  - 409 冲突识别从 `instanceof SettingsConflictError` 改为稳定机器码
+    `e.code === "SETTINGS_CONFLICT"`（该错误类本就无法从插件目录导入）
+  - package.json 移除这两个 peerDependencies
+
 ## [0.9.4]
 
 ### 修复
