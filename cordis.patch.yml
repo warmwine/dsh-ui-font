@@ -5,3 +5,6 @@
 - insert:
     - id: ui-font
       name: 'dsh-ui-font'
+      inject:
+        - webServer
+        - settings
