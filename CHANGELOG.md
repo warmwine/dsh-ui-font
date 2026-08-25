@@ -4,6 +4,24 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循语义化版本。
 
+## [0.9.3]
+
+### 修复
+
+- **DSH ≥ 0.1.1 升级后 AI 回复不再随全局偏移放大**：新版把 `--dsw-font-*` 令牌的
+  定义从外壳 `<link href="/assets/*.css">` 样式表挪进了 `dsh-client-ui-theme`
+  运行时注入的 `<style data-plugin>`（design-platform.css，声明在 `:root`），
+  link 表里只剩 `var()` 消费者。引擎的两处令牌采集（`findShellTokenDecls` 与
+  `scan()` 预扫描）都只读 link 表，采集结果为空 → body 上的令牌覆盖一条不发 →
+  正文 / 标题 / 行内代码 / 代码块全部保持原尺寸（准星的「文字类型」判定与全局
+  滑杆看着正常，唯独不生效）。现改为从**所有可读样式表**（link + 注入 style，
+  跳过本插件自己的覆盖表防叠加缩放）合并令牌定义，新旧两种分布都兼容
+- **字体族选择可能被 theme 重挂反杀**：`--dsw-font-family` / `--ds-font-family-code`
+  的覆盖从 `:root` 挪到 `body` 上——ui-theme 的样式表挂在插件 fiber 上，重激活时
+  会先移除再重挂，`:root` 同优先级谁后谁赢，重挂后排到本插件之后会丢掉所选字体
+  族；body 层的自定义属性按继承稳定压过任何 `:root` 声明且与标签顺序无关。换肤
+  插件在 body 层重声明仍然后赢，「以皮肤为准」的既有约定不变
+
 ## [0.9.2]
 
 ### 新增
