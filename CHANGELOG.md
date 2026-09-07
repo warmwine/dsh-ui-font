@@ -4,6 +4,41 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循语义化版本。
 
+## [0.9.6]
+
+### 修复
+
+- **DSH ≥ 0.1.2-rc.1 升级后全局字号再次不影响对话正文、准星只显示「主界面」**。
+  新版主题把正文字号体系整个重构为「内容轴」：
+  - 新增原生字号设置（设置 → 通用 → 字号，12–17px），由 ThemePresenter 以
+    **body 内联 style** 写入 `--dsh-content-font-size`
+  - `--dsw-font-markdown-*` 的值不再是 `14px/22px` 字面量，全部变为
+    `var(--dsh-content-font-size,…)` / `calc(21px + var(--dsh-content-font-delta))`
+    形式的表达式（h1–h3 与行高经 delta 派生、表格经 secondary 派生，派生变量
+    声明在 body 上）
+  三处连锁断裂与本版的修复：
+  - **库存解析失效**：`stockSizeOf`/stocks/`buildTokenCss` 只认 `^数字px` 字面量，
+    var()/calc() 形式全部解析失败 → 令牌库存为空 → body 覆盖不发。新增
+    `resolveTokenValue`：按当前原生字号（读 body 内联值，非 computed，避免被
+    本插件自己的覆盖污染）代入 content 变量并求值 calc，新旧两种值形态都兼容
+    （负 delta 亦正确）
+  - **令牌归属失效**：消费规则的字号声明从 `font-size:var(--x)` 长写法改为
+    `font:var(--x)` 简写后，Chromium 的 CSSOM 会把 font-size 长项序列化为解析
+    后的像素值，var() 被隐藏 → 家族提取失败 → 规则被整体丢弃 → 准星兜底
+    「主界面」。家族提取改从规则原文（cssText 永远保留 var() 原文）读取；直接
+    消费 `--dsh-content-font-size*` 的规则归入「聊天正文」家族；
+    `--dsw-font-family`（纯字体族引用）不再误登记为字号家族
+  - **覆盖通道失效**：对 var() 表达式内的字面量做缩放是无效的（var 仍解析到
+    内联值）。改为在 body 上以 `!important` 覆盖上游轴
+    `--dsh-content-font-size`（important 样式表声明压过非 important 内联样
+    式）——delta/secondary/h1–h3/行高整条派生链在 body 上自动跟随，一处覆盖
+    全族生效；净调整为零时不发该覆盖，原生字号设置保持可用。h1/h2/h3/表格的
+    perToken 独立偏移通过「代入计算后的具体 px 覆盖」实现分歧
+  - 新增 body style 属性的 MutationObserver（防抖 200ms）：原生字号/主题变化
+    重写内联轴时自动重算叠加——本插件唯一的观察器，依然零轮询
+  - 新增 `tools/test-content-axis.cjs`：以安装的主题包与 shell CSS 的**真实**
+    令牌值/规则文本做解析与归属回归（含原生 12/17 的负/正 delta 跟踪）
+
 ## [0.9.5]
 
 ### 修复
